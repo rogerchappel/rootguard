@@ -9,6 +9,7 @@ export function isManifest(value: unknown): value is RootGuardManifest {
   const identity = candidate.identity as Record<string, unknown> | undefined;
   return (
     candidate.version === 1 &&
+    (candidate.$schema === undefined || typeof candidate.$schema === "string") &&
     !!identity &&
     typeof identity === "object" &&
     Array.isArray(candidate.allow) &&

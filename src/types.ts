@@ -3,6 +3,7 @@ export const manifestFileName = ".rootguard.json";
 export type RootGuardOutputFormat = "text" | "json";
 
 export interface RootGuardManifest {
+  $schema?: string;
   version: 1;
   identity: {
     packageName?: string;

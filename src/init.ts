@@ -22,6 +22,7 @@ export async function initManifest(options: InitOptions = {}): Promise<{
   ]);
 
   const manifest: RootGuardManifest = {
+    $schema: "./docs/rootguard.schema.json",
     version: 1,
     identity: {
       packageName: options.packageName ?? detectedPackageName,
