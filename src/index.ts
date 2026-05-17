@@ -127,6 +127,7 @@ function parseCommonOptions(argv: string[]): {
 
   for (let index = 0; index < argv.length; index += 1) {
     const part = argv[index];
+    if (!part) continue;
     if (part === "--json") {
       format = "json";
     } else if (part === "--cwd") {
