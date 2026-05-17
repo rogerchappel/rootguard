@@ -1,4 +1,5 @@
 {
+  "$schema": "../../../docs/rootguard.schema.json",
   "version": 1,
   "identity": {
     "packageName": "missing-remote-fixture",
