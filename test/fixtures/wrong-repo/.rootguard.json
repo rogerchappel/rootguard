@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "identity": {
+    "packageName": "expected-root",
+    "gitRemote": "https://github.com/example/expected-root.git"
+  },
+  "allow": [
+    {
+      "prefix": ["npm", "test"]
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "identity": {
+    "packageName": "allowed-command-fixture",
+    "gitRemote": "https://github.com/example/allowed-command-fixture.git"
+  },
+  "allow": [
+    {
+      "prefix": ["node", "-e"],
+      "description": "Allow tiny Node smoke snippets."
+    }
+  ]
+}

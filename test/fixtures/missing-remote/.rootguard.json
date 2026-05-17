@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "identity": {
+    "packageName": "missing-remote-fixture",
+    "gitRemote": "https://github.com/example/missing-remote-fixture.git"
+  },
+  "allow": [
+    {
+      "prefix": ["npm", "test"]
+    }
+  ]
+}

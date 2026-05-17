@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "identity": {
+    "packageName": "nested-directory-fixture",
+    "gitRemote": "https://github.com/example/nested-directory-fixture.git"
+  },
+  "allow": [
+    {
+      "prefix": ["node", "-e"]
+    }
+  ]
+}
