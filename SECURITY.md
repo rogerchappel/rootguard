@@ -1,57 +1,48 @@
 # Security Policy
 
+RootGuard is a local command guard, not an operating-system sandbox. Treat it as a defense against wrong-directory mistakes and overly broad automation, not as a boundary against malicious code.
+
 ## Supported Versions
 
-Replace this section with the supported versions for `rootguard`.
-
-Example:
-
-```md
 | Version | Supported |
 | --- | --- |
-| .x | Yes |
-| < .0 | No |
-```
+| main | Yes |
 
-If the project does not publish versioned releases yet, say that clearly.
+Versioned releases will be supported once the package is published.
 
 ## Reporting a Vulnerability
 
 Please do not report suspected vulnerabilities in public issues, pull requests, or discussions.
 
-Ask maintainers for the private security reporting path before sharing details.
-
-If no private reporting path exists yet, ask maintainers through public project channels for a private reporting path. Do not include exploit details, secrets, personal data, or sensitive technical details in public messages.
+Ask maintainers for the private security reporting path before sharing details. If no private reporting path exists yet, ask through public project channels for a private reporting path, but do not include exploit details, secrets, personal data, or sensitive technical details in public messages.
 
 ## What to Include
 
 When a private reporting path is available, include:
 
-- A clear description of the issue.
-- Affected versions, files, packages, workflows, or configuration.
-- Steps to reproduce, proof of concept, or attack scenario when safe to share.
-- Potential impact.
-- Suggested mitigation, if known.
-
-## Response Expectations
-
-Maintainers review good-faith reports as capacity allows.
-
-Do not imply paid support, guaranteed response times, guaranteed fixes, or service-level agreements unless `rootguard` explicitly provides them.
+- affected commit, tag, or package version
+- operating system and Node.js version
+- the manifest involved, with secrets removed
+- a minimal reproduction
+- expected and actual behavior
+- potential impact
 
 ## Scope
 
 In scope:
 
-- Vulnerabilities in rootguard.
-- Insecure default configuration shipped by this project.
-- CI, release, or dependency guidance maintained by this project.
+- command execution when identity checks fail
+- allowlist bypasses
+- JSON output that hides or misreports denial reasons
+- path traversal that finds the wrong manifest
+- insecure defaults shipped by this project
 
 Out of scope:
 
-- General support requests.
-- Requests for guaranteed maintenance timelines.
-- Issues in unrelated downstream projects.
+- commands that are explicitly allowed by the manifest
+- protection from malicious dependencies or scripts
+- containment, permissions, containers, or kernel sandboxing
+- general support requests
 
 ## Disclosure
 
