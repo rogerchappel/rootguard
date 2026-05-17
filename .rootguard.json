@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "identity": {
+    "packageName": "rootguard",
+    "gitRemote": "https://github.com/rogerchappel/rootguard.git"
+  },
+  "allow": [
+    {
+      "prefix": ["npm", "test"],
+      "description": "Run the focused test suite."
+    },
+    {
+      "prefix": ["npm", "run", "check"],
+      "description": "Run TypeScript static checks."
+    },
+    {
+      "prefix": ["npm", "run", "build"],
+      "description": "Compile the CLI."
+    },
+    {
+      "prefix": ["npm", "run", "smoke"],
+      "description": "Run fixture-backed CLI smoke checks."
+    },
+    {
+      "prefix": ["bash", "scripts/validate.sh"],
+      "description": "Run repository validation checks."
+    }
+  ]
+}
