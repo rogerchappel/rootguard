@@ -17,7 +17,7 @@
 
 ## Next
 
-- [ ] Add a JSON schema for .rootguard.json.
+- [x] Add a JSON schema for .rootguard.json.
 - [ ] Support named allowlist profiles for CI, local, and release workflows.
 - [ ] Add shell completion generation.
 - [ ] Publish first npm release after external usage feedback.

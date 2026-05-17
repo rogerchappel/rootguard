@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/rogerchappel/rootguard/blob/main/docs/rootguard.schema.json",
+  "title": "RootGuard manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "identity", "allow"],
+  "properties": {
+    "version": {
+      "const": 1
+    },
+    "identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "packageName": {
+          "type": "string",
+          "minLength": 1
+        },
+        "gitRemote": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "allow": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["prefix"],
+        "properties": {
+          "prefix": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}
