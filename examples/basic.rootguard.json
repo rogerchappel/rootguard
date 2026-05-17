@@ -1,0 +1,18 @@
+{
+  "$schema": "../docs/rootguard.schema.json",
+  "version": 1,
+  "identity": {
+    "packageName": "my-package",
+    "gitRemote": "https://github.com/example/my-package.git"
+  },
+  "allow": [
+    {
+      "prefix": ["npm", "test"],
+      "description": "Tests are safe to run from any guarded subdirectory."
+    },
+    {
+      "prefix": ["npm", "run", "build"],
+      "description": "Build output stays inside this repository."
+    }
+  ]
+}

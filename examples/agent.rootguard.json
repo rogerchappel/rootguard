@@ -1,0 +1,22 @@
+{
+  "$schema": "../docs/rootguard.schema.json",
+  "version": 1,
+  "identity": {
+    "packageName": "agent-owned-project",
+    "gitRemote": "git@github.com:example/agent-owned-project.git"
+  },
+  "allow": [
+    {
+      "prefix": ["npm", "test"],
+      "description": "Let agents verify behavior."
+    },
+    {
+      "prefix": ["npm", "run", "check"],
+      "description": "Let agents run static checks."
+    },
+    {
+      "prefix": ["npm", "run", "smoke"],
+      "description": "Let agents prove the CLI works end to end."
+    }
+  ]
+}
