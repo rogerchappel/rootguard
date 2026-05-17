@@ -1,0 +1,30 @@
+{
+  "name": "rootguard",
+  "purpose": "Guard command execution by verifying repo root identity and explicit command allowlists.",
+  "commands": {
+    "check": {
+      "argv": ["rootguard", "check", "--json"],
+      "safeDefault": true,
+      "description": "Verify the current directory belongs to the expected project."
+    },
+    "run": {
+      "argv": ["rootguard", "run", "--json", "--"],
+      "safeDefault": false,
+      "description": "Verify identity and allowlist before executing a command."
+    }
+  },
+  "denialCodes": [
+    "manifest_not_found",
+    "git_root_mismatch",
+    "git_remote_missing",
+    "git_remote_mismatch",
+    "package_name_mismatch",
+    "command_not_allowed"
+  ],
+  "recommendedAllowPrefixes": [
+    ["npm", "test"],
+    ["npm", "run", "check"],
+    ["npm", "run", "build"],
+    ["npm", "run", "smoke"]
+  ]
+}
