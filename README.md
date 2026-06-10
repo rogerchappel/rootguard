@@ -65,7 +65,18 @@ Denials include stable codes such as git_remote_mismatch, package_name_mismatch,
     npm run check
     npm run build
     npm run smoke
+    npm run package:smoke
+    npm run release:check
     bash scripts/validate.sh
+
+`npm run release:check` runs the TypeScript check, compiled tests, smoke
+fixture, and npm pack dry-run used to verify release readiness.
+
+## Package Contents
+
+The npm package includes the executable shim, compiled sources, docs, examples,
+README, license, changelog, contributing guide, and security policy. Run
+`npm run package:smoke` to inspect the exact tarball before publishing.
 
 ## Safety Notes
 
