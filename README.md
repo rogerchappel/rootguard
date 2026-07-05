@@ -75,8 +75,9 @@ fixture, and npm pack dry-run used to verify release readiness.
 ## Package Contents
 
 The npm package includes the executable shim, compiled sources, docs, examples,
-README, license, changelog, contributing guide, and security policy. Run
-`npm run package:smoke` to inspect the exact tarball before publishing.
+README, license, changelog, contributing guide, and security policy.
+`npm run package:smoke` builds the project, performs a dry-run pack, and fails if
+declared entrypoints or release support files are missing from the tarball.
 
 ## Safety Notes
 
