@@ -12,9 +12,16 @@ export function isManifest(value: unknown): value is RootGuardManifest {
     (candidate.$schema === undefined || typeof candidate.$schema === "string") &&
     !!identity &&
     typeof identity === "object" &&
+    !Array.isArray(identity) &&
+    isOptionalNonEmptyString(identity.packageName) &&
+    isOptionalNonEmptyString(identity.gitRemote) &&
     Array.isArray(candidate.allow) &&
     candidate.allow.every(isAllowRule)
   );
+}
+
+function isOptionalNonEmptyString(value: unknown): value is string | undefined {
+  return value === undefined || (typeof value === "string" && value.length > 0);
 }
 
 function isAllowRule(value: unknown): value is CommandAllowRule {
@@ -38,9 +45,14 @@ export async function loadManifest(startDirectory: string): Promise<{
     throw new Error(`No ${manifestFileName} found from ${startDirectory}`);
   }
 
-  const parsed = await readJsonFile(manifestPath);
+  let parsed: unknown;
+  try {
+    parsed = await readJsonFile(manifestPath);
+  } catch {
+    throw new InvalidManifestError(manifestPath);
+  }
   if (!isManifest(parsed)) {
-    throw new Error(`${manifestPath} is not a valid RootGuard manifest`);
+    throw new InvalidManifestError(manifestPath);
   }
 
   return {
@@ -48,6 +60,13 @@ export async function loadManifest(startDirectory: string): Promise<{
     manifestPath,
     projectRoot: dirname(manifestPath)
   };
+}
+
+export class InvalidManifestError extends Error {
+  constructor(manifestPath: string) {
+    super(`${manifestPath} is not a valid RootGuard manifest`);
+    this.name = "InvalidManifestError";
+  }
 }
 
 export async function writeManifest(projectRoot: string, manifest: RootGuardManifest): Promise<string> {

@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { join } from "node:path";
+import { writeFile } from "node:fs/promises";
 import { checkProject } from "../dist/check.js";
 import { fixtureRepo } from "./helpers.js";
 
@@ -48,4 +49,24 @@ test("check reports missing remote when manifest expects one", async () => {
 
   assert.equal(report.ok, false);
   assert.equal(report.denials[0].code, "git_remote_missing");
+});
+
+test("check rejects malformed identity field types before comparing a configured remote", async () => {
+  const repo = await fixtureRepo("allowed-command", {
+    remote: "https://github.com/example/allowed-command-fixture.git"
+  });
+  await writeFile(
+    join(repo, ".rootguard.json"),
+    JSON.stringify({
+      version: 1,
+      identity: { packageName: false, gitRemote: 42 },
+      allow: [{ prefix: ["node", "-e"] }]
+    })
+  );
+
+  const report = await checkProject(repo);
+
+  assert.equal(report.ok, false);
+  assert.equal(report.denials[0].code, "manifest_invalid");
+  assert.match(report.denials[0].message, /is not a valid RootGuard manifest/);
 });

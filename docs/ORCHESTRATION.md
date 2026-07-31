@@ -18,6 +18,7 @@ RootGuard is not a sandbox. It is a local tripwire for wrong-directory mistakes.
 Agents should treat any non-zero exit code as a hard stop and surface the denial code. The useful codes are:
 
 - manifest_not_found: no project policy was found from the current directory.
+- manifest_invalid: the discovered policy is malformed or does not match the manifest schema.
 - git_root_mismatch: the manifest directory is not the active git root.
 - git_remote_missing: the manifest expects an origin remote but none is set.
 - git_remote_mismatch: origin points somewhere else.
