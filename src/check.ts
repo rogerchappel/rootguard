@@ -1,6 +1,6 @@
 import { resolve } from "node:path";
 import { normalizeRemote, readGitRemote, readGitRoot } from "./git.js";
-import { loadManifest } from "./manifest.js";
+import { InvalidManifestError, loadManifest } from "./manifest.js";
 import { readPackageName } from "./package-json.js";
 import type { CheckReport, Denial } from "./types.js";
 
@@ -13,7 +13,7 @@ export async function checkProject(cwd: string): Promise<CheckReport> {
     manifestContext = await loadManifest(resolvedCwd);
   } catch (error) {
     denials.push({
-      code: "manifest_not_found",
+      code: error instanceof InvalidManifestError ? "manifest_invalid" : "manifest_not_found",
       message: error instanceof Error ? error.message : "RootGuard manifest was not found"
     });
     return {
