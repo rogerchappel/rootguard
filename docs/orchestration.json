@@ -15,6 +15,7 @@
   },
   "denialCodes": [
     "manifest_not_found",
+    "manifest_invalid",
     "git_root_mismatch",
     "git_remote_missing",
     "git_remote_mismatch",
