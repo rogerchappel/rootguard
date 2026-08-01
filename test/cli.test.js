@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { writeFile } from "node:fs/promises";
+import { access, readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { fixtureRepo, runCli } from "./helpers.js";
 
@@ -15,6 +15,21 @@ test("cli check emits machine-readable json", async () => {
   assert.equal(result.code, 0);
   assert.equal(report.ok, true);
   assert.equal(report.identity.expectedPackageName, "allowed-command-fixture");
+});
+
+test("cli init writes a checkout-independent schema reference", async () => {
+  const repo = await fixtureRepo("allowed-command", {
+    remote: "https://github.com/example/allowed-command-fixture.git"
+  });
+
+  const result = await runCli(["init", "--cwd", repo]);
+  const manifest = JSON.parse(await readFile(join(repo, ".rootguard.json"), "utf8"));
+  const schemaUrl = new URL(manifest.$schema);
+
+  assert.equal(result.code, 0);
+  assert.equal(schemaUrl.protocol, "https:");
+  assert.equal(schemaUrl.hostname, "raw.githubusercontent.com");
+  await assert.rejects(access(join(repo, "docs", "rootguard.schema.json")));
 });
 
 test("cli run executes an allowed fixture command", async () => {

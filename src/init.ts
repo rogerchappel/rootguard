@@ -11,6 +11,9 @@ export interface InitOptions {
   allow?: string[][];
 }
 
+export const ROOTGUARD_SCHEMA_URL =
+  "https://raw.githubusercontent.com/rogerchappel/rootguard/main/docs/rootguard.schema.json";
+
 export async function initManifest(options: InitOptions = {}): Promise<{
   manifest: RootGuardManifest;
   manifestPath: string;
@@ -22,7 +25,7 @@ export async function initManifest(options: InitOptions = {}): Promise<{
   ]);
 
   const manifest: RootGuardManifest = {
-    $schema: "./docs/rootguard.schema.json",
+    $schema: ROOTGUARD_SCHEMA_URL,
     version: 1,
     identity: {
       packageName: options.packageName ?? detectedPackageName,

@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/rogerchappel/rootguard/blob/main/docs/rootguard.schema.json",
+  "$id": "https://raw.githubusercontent.com/rogerchappel/rootguard/main/docs/rootguard.schema.json",
   "title": "RootGuard manifest",
   "type": "object",
   "additionalProperties": false,
