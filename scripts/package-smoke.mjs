@@ -1,10 +1,13 @@
 import { spawnSync } from 'node:child_process';
-import { readFileSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 
-const run = (command, args) => {
+const run = (command, args, options = {}) => {
   const result = spawnSync(command, args, {
     encoding: 'utf8',
-    stdio: ['ignore', 'pipe', 'pipe']
+    stdio: ['ignore', 'pipe', 'pipe'],
+    ...options
   });
 
   if (result.status !== 0) {
@@ -79,3 +82,37 @@ if (missingEntryPoints.length || missingReleaseFiles.length) {
 console.log(
   `Package tarball includes ${expected.size} declared entrypoint(s) and ${requiredReleaseFiles.length} release support file(s).`
 );
+
+const smokeRoot = mkdtempSync(join(tmpdir(), 'rootguard-package-smoke-'));
+try {
+  const packDir = join(smokeRoot, 'pack');
+  const consumerDir = join(smokeRoot, 'consumer');
+  mkdirSync(packDir);
+  mkdirSync(consumerDir);
+
+  const [packed] = JSON.parse(run('npm', ['pack', '--json', '--pack-destination', packDir]));
+  const tarball = join(packDir, packed.filename);
+  writeFileSync(join(consumerDir, 'package.json'), '{"name":"rootguard-package-consumer","private":true}\n');
+  run('npm', ['install', '--ignore-scripts', '--no-audit', '--no-fund', tarball], { cwd: consumerDir });
+  run(
+    process.execPath,
+    [join(consumerDir, 'node_modules', 'rootguard', 'bin', 'rootguard.js'), 'init', '--cwd', consumerDir],
+    { cwd: consumerDir }
+  );
+
+  const manifest = JSON.parse(readFileSync(join(consumerDir, '.rootguard.json'), 'utf8'));
+  const schema = JSON.parse(
+    readFileSync(join(consumerDir, 'node_modules', 'rootguard', 'docs', 'rootguard.schema.json'), 'utf8')
+  );
+  const schemaUrl = new URL(manifest.$schema);
+  if (schemaUrl.protocol !== 'https:' || schemaUrl.hostname !== 'raw.githubusercontent.com') {
+    throw new Error(`Generated manifest has a non-portable schema reference: ${manifest.$schema}`);
+  }
+  if (manifest.$schema !== schema.$id) {
+    throw new Error(`Generated schema reference ${manifest.$schema} does not match schema $id ${schema.$id}`);
+  }
+
+  console.log('Packed CLI generates a manifest with a canonical hosted schema reference.');
+} finally {
+  rmSync(smokeRoot, { recursive: true, force: true });
+}

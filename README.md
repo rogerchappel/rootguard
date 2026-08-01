@@ -45,6 +45,11 @@ RootGuard reads .rootguard.json from the current directory upward.
       ]
     }
 
+`rootguard init` adds a `$schema` reference to the canonical schema at
+`https://raw.githubusercontent.com/rogerchappel/rootguard/main/docs/rootguard.schema.json`.
+Editors and validators can fetch that URL without relying on a checkout-local
+`docs/` directory. The schema uses the same URL as its `$id`.
+
 Checks are deterministic and local:
 
 - package.json name must match when configured.
@@ -76,8 +81,9 @@ fixture, and npm pack dry-run used to verify release readiness.
 
 The npm package includes the executable shim, compiled sources, docs, examples,
 README, license, changelog, contributing guide, and security policy.
-`npm run package:smoke` builds the project, performs a dry-run pack, and fails if
-declared entrypoints or release support files are missing from the tarball.
+`npm run package:smoke` builds the project, checks the dry-run package contents,
+installs the resulting tarball into a temporary consumer project, and verifies
+that `rootguard init` emits the canonical hosted schema reference.
 
 ## Safety Notes
 
