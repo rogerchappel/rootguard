@@ -6,6 +6,14 @@ It is not a sandbox. It is a tripwire with good manners.
 
 ## Install
 
+No npm version has been published yet. Until the first tagged release, install
+the current `main` branch directly from GitHub:
+
+    npm install --save-dev github:rogerchappel/rootguard
+
+After a version appears on the [releases page](https://github.com/rogerchappel/rootguard/releases),
+install that published version from npm:
+
     npm install --save-dev rootguard
 
 For local development in this repo:
@@ -76,6 +84,9 @@ Denials include stable codes such as git_remote_mismatch, package_name_mismatch,
 
 `npm run release:check` runs the TypeScript check, compiled tests, smoke
 fixture, and npm pack dry-run used to verify release readiness.
+`npm run release:pack -- <directory>` creates the exact tarball used by the tag
+workflow and rejects an artifact whose name or version differs from
+`package.json`.
 
 ## Package Contents
 
