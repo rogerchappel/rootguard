@@ -77,3 +77,16 @@ If verification cannot be run, explain why and provide the exact command maintai
 ## Maintainer Review
 
 Maintainers may request narrower scope, clearer verification, additional tests, or safer defaults before merging.
+
+## Releases
+
+The `Release` workflow handles tags matching `v*.*.*`. Its npm job verifies the
+package, creates a name-and-version-checked tarball, and publishes that tarball
+with npm trusted publishing and provenance. A separate least-privilege job then
+attaches the same tarball to the GitHub release.
+
+Before creating the first tag, a maintainer must configure `rootguard` as an npm
+trusted publisher for the `rogerchappel/rootguard` repository and
+`.github/workflows/release.yml`. Pull requests run the non-publishing `Release
+dry run` workflow, including `npm publish --dry-run` against the checked
+tarball. Do not test the release workflow by creating a tag.

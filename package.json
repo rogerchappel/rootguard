@@ -28,6 +28,7 @@
     "smoke": "npm run build && bash scripts/smoke.sh",
     "prepack": "npm run build",
     "package:smoke": "node scripts/package-smoke.mjs",
+    "release:pack": "node scripts/pack-release.mjs",
     "release:check": "npm run check && npm test && npm run build && npm run smoke && npm run package:smoke"
   },
   "keywords": [

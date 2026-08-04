@@ -9,3 +9,4 @@
 - Add text and JSON output for human and agent workflows.
 - Add fixtures and smoke tests for allowed commands, nested directories, wrong repos, and missing remotes.
 - Add safety examples and orchestration docs.
+- Add verified npm artifacts and trusted publication to the tag release workflow.

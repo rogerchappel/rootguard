@@ -30,4 +30,5 @@
 - [ ] npm run build
 - [ ] npm run smoke
 - [ ] bash scripts/validate.sh
-- [ ] Confirm package contents with npm pack --dry-run
+- [ ] npm run release:check
+- [ ] Confirm the publication artifact with npm run release:pack -- <directory>
