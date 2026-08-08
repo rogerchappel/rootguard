@@ -8,16 +8,23 @@ export function isManifest(value: unknown): value is RootGuardManifest {
   const candidate = value as Record<string, unknown>;
   const identity = candidate.identity as Record<string, unknown> | undefined;
   return (
+    hasOnlyKeys(candidate, ["$schema", "version", "identity", "allow"]) &&
     candidate.version === 1 &&
-    (candidate.$schema === undefined || typeof candidate.$schema === "string") &&
+    isOptionalNonEmptyString(candidate.$schema) &&
     !!identity &&
     typeof identity === "object" &&
     !Array.isArray(identity) &&
+    hasOnlyKeys(identity, ["packageName", "gitRemote"]) &&
     isOptionalNonEmptyString(identity.packageName) &&
     isOptionalNonEmptyString(identity.gitRemote) &&
     Array.isArray(candidate.allow) &&
+    candidate.allow.length > 0 &&
     candidate.allow.every(isAllowRule)
   );
+}
+
+function hasOnlyKeys(value: Record<string, unknown>, allowedKeys: string[]): boolean {
+  return Object.keys(value).every((key) => allowedKeys.includes(key));
 }
 
 function isOptionalNonEmptyString(value: unknown): value is string | undefined {
@@ -28,6 +35,7 @@ function isAllowRule(value: unknown): value is CommandAllowRule {
   if (!value || typeof value !== "object") return false;
   const candidate = value as Record<string, unknown>;
   return (
+    hasOnlyKeys(candidate, ["prefix", "description"]) &&
     Array.isArray(candidate.prefix) &&
     candidate.prefix.length > 0 &&
     candidate.prefix.every((part) => typeof part === "string" && part.length > 0) &&
