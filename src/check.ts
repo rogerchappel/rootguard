@@ -1,4 +1,5 @@
 import { resolve } from "node:path";
+import { realpath } from "node:fs/promises";
 import { normalizeRemote, readGitRemote, readGitRoot } from "./git.js";
 import { InvalidManifestError, loadManifest } from "./manifest.js";
 import { readPackageName } from "./package-json.js";
@@ -31,7 +32,12 @@ export async function checkProject(cwd: string): Promise<CheckReport> {
     readPackageName(projectRoot)
   ]);
 
-  if (gitRoot && resolve(gitRoot) !== resolve(projectRoot)) {
+  const [canonicalGitRoot, canonicalProjectRoot] = await Promise.all([
+    gitRoot ? canonicalPath(gitRoot) : undefined,
+    canonicalPath(projectRoot)
+  ]);
+
+  if (gitRoot && canonicalGitRoot !== canonicalProjectRoot) {
     denials.push({
       code: "git_root_mismatch",
       message: "Current git root does not match the RootGuard manifest directory.",
@@ -76,4 +82,12 @@ export async function checkProject(cwd: string): Promise<CheckReport> {
       gitRoot
     }
   };
+}
+
+async function canonicalPath(path: string): Promise<string> {
+  try {
+    return await realpath(path);
+  } catch {
+    return resolve(path);
+  }
 }
