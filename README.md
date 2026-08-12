@@ -61,8 +61,10 @@ Editors and validators can fetch that URL without relying on a checkout-local
 Checks are deterministic and local:
 
 - package.json name must match when configured.
-- git remote get-url origin must match when configured.
-- nested directories are allowed only inside the same git root.
+- git remote get-url origin must match when configured; equivalent HTTPS,
+  `git@host:owner/repo`, and `ssh://git@host/owner/repo` spellings compare equally.
+- nested directories and symlinked path aliases are allowed only inside the same
+  git root, as determined by filesystem identity.
 - commands must start with an explicit allow prefix.
 
 ## Agent-Friendly JSON

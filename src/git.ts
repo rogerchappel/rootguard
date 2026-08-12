@@ -21,6 +21,14 @@ export function normalizeRemote(remote: string | undefined): string | undefined 
   if (scpLike) {
     return `https://${scpLike[1]}/${scpLike[2]}`.toLowerCase();
   }
+  try {
+    const url = new URL(trimmed);
+    if (url.protocol === "ssh:" && url.username === "git") {
+      return `https://${url.hostname}${url.pathname}`.toLowerCase();
+    }
+  } catch {
+    // Preserve non-URL remote spellings for an exact normalized comparison.
+  }
   return trimmed.toLowerCase();
 }
 
