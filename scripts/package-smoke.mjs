@@ -112,7 +112,25 @@ try {
     throw new Error(`Generated schema reference ${manifest.$schema} does not match schema $id ${schema.$id}`);
   }
 
-  console.log('Packed CLI generates a manifest with a canonical hosted schema reference.');
+  const manifestPath = join(consumerDir, '.rootguard.json');
+  const existingManifest = readFileSync(manifestPath);
+  const repeatedInit = spawnSync(
+    process.execPath,
+    [join(consumerDir, 'node_modules', 'rootguard', 'bin', 'rootguard.js'), 'init', '--cwd', consumerDir],
+    { cwd: consumerDir, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }
+  );
+  const expectedError =
+    `.rootguard.json already exists at ${manifestPath}; remove it before running rootguard init\n`;
+  if (repeatedInit.status !== 1 || repeatedInit.stdout !== '' || repeatedInit.stderr !== expectedError) {
+    throw new Error(
+      `Packed CLI did not refuse repeated init deterministically: ${JSON.stringify(repeatedInit)}`
+    );
+  }
+  if (!readFileSync(manifestPath).equals(existingManifest)) {
+    throw new Error('Packed CLI changed the existing manifest after refusing repeated init.');
+  }
+
+  console.log('Packed CLI generates a canonical manifest and preserves it on repeated init.');
 } finally {
   rmSync(smokeRoot, { recursive: true, force: true });
 }
