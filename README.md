@@ -27,6 +27,9 @@ Create a manifest:
 
     npx rootguard init --allow "npm test" --allow "npm run build"
 
+`rootguard init` refuses to replace an existing `.rootguard.json`. Review or
+remove the existing file explicitly before initializing the project again.
+
 Check the current directory:
 
     npx rootguard check
@@ -96,7 +99,8 @@ The npm package includes the executable shim, compiled sources, docs, examples,
 README, license, changelog, contributing guide, and security policy.
 `npm run package:smoke` builds the project, checks the dry-run package contents,
 installs the resulting tarball into a temporary consumer project, and verifies
-that `rootguard init` emits the canonical hosted schema reference.
+that `rootguard init` emits the canonical hosted schema reference while
+preserving that manifest if initialization is attempted again.
 
 ## Safety Notes
 

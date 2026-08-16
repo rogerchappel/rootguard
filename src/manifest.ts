@@ -1,5 +1,6 @@
 import { writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
+import { RootGuardError } from "./errors.js";
 import { findUp, readJsonFile } from "./fs.js";
 import { manifestFileName, type CommandAllowRule, type RootGuardManifest } from "./types.js";
 
@@ -79,6 +80,22 @@ export class InvalidManifestError extends Error {
 
 export async function writeManifest(projectRoot: string, manifest: RootGuardManifest): Promise<string> {
   const manifestPath = join(projectRoot, manifestFileName);
-  await writeFile(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`, { mode: 0o644 });
+  try {
+    await writeFile(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`, {
+      flag: "wx",
+      mode: 0o644
+    });
+  } catch (error) {
+    if (isAlreadyExistsError(error)) {
+      throw new RootGuardError(
+        `${manifestFileName} already exists at ${manifestPath}; remove it before running rootguard init`
+      );
+    }
+    throw error;
+  }
   return manifestPath;
+}
+
+function isAlreadyExistsError(error: unknown): error is NodeJS.ErrnoException {
+  return error instanceof Error && "code" in error && error.code === "EEXIST";
 }

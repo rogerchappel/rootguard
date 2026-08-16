@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { access, readFile, writeFile } from "node:fs/promises";
+import { access, readFile, rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { fixtureRepo, runCli } from "./helpers.js";
 
@@ -21,6 +21,7 @@ test("cli init writes a checkout-independent schema reference", async () => {
   const repo = await fixtureRepo("allowed-command", {
     remote: "https://github.com/example/allowed-command-fixture.git"
   });
+  await rm(join(repo, ".rootguard.json"));
 
   const result = await runCli(["init", "--cwd", repo]);
   const manifest = JSON.parse(await readFile(join(repo, ".rootguard.json"), "utf8"));
@@ -30,6 +31,23 @@ test("cli init writes a checkout-independent schema reference", async () => {
   assert.equal(schemaUrl.protocol, "https:");
   assert.equal(schemaUrl.hostname, "raw.githubusercontent.com");
   await assert.rejects(access(join(repo, "docs", "rootguard.schema.json")));
+});
+
+test("cli init refuses to replace an existing manifest", async () => {
+  const repo = await fixtureRepo("allowed-command");
+  const manifestPath = join(repo, ".rootguard.json");
+  const existing = Buffer.from('{"sentinel":"keep"}\n');
+  await writeFile(manifestPath, existing);
+
+  const result = await runCli(["init", "--cwd", repo]);
+
+  assert.equal(result.code, 1);
+  assert.equal(
+    result.stderr,
+    `.rootguard.json already exists at ${manifestPath}; remove it before running rootguard init\n`
+  );
+  assert.equal(result.stdout, "");
+  assert.deepEqual(await readFile(manifestPath), existing);
 });
 
 test("cli run executes an allowed fixture command", async () => {
