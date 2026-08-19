@@ -94,3 +94,44 @@ test("cli check reports an invalid manifest for a non-string git remote", async 
   assert.match(report.denials[0].message, /is not a valid RootGuard manifest/);
   assert.doesNotMatch(result.stderr, /TypeError|trim is not a function/);
 });
+
+test("cli check emits a JSON denial for malformed package metadata", async () => {
+  const repo = await fixtureRepo("allowed-command");
+  await writeFile(join(repo, "package.json"), "{invalid");
+
+  const result = await runCli(["check", "--json", "--cwd", repo]);
+  const report = JSON.parse(result.stdout);
+
+  assert.equal(result.code, 1);
+  assert.equal(report.denials[0].code, "package_metadata_unreadable");
+  assert.equal(result.stderr, "");
+});
+
+test("cli run denies malformed package metadata without executing the command", async () => {
+  const repo = await fixtureRepo("allowed-command");
+  const marker = join(repo, "command-ran");
+  await writeFile(join(repo, "package.json"), "{invalid");
+
+  const result = await runCli([
+    "run", "--json", "--cwd", repo, "--", process.execPath, "-e",
+    `require('node:fs').writeFileSync(${JSON.stringify(marker)}, 'ran')`
+  ]);
+  const report = JSON.parse(result.stdout);
+
+  assert.equal(result.code, 1);
+  assert.equal(report.allowed, false);
+  assert.equal(report.denials[0].code, "package_metadata_unreadable");
+  await assert.rejects(access(marker));
+});
+
+test("cli text output concisely reports malformed package metadata", async () => {
+  const repo = await fixtureRepo("allowed-command");
+  await writeFile(join(repo, "package.json"), "{invalid");
+
+  const result = await runCli(["check", "--cwd", repo]);
+
+  assert.equal(result.code, 1);
+  assert.equal(result.stdout, "");
+  assert.match(result.stderr, /^RootGuard check denied:\n- package_metadata_unreadable: Unable to read package\.json metadata/);
+  assert.doesNotMatch(result.stderr, /SyntaxError|at JSON\.parse/);
+});

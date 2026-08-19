@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { join } from "node:path";
-import { symlink, writeFile } from "node:fs/promises";
+import { mkdir, rm, symlink, writeFile } from "node:fs/promises";
 import { checkProject } from "../dist/check.js";
 import { fixtureRepo } from "./helpers.js";
 
@@ -106,4 +106,23 @@ test("check rejects malformed identity field types before comparing a configured
   assert.equal(report.ok, false);
   assert.equal(report.denials[0].code, "manifest_invalid");
   assert.match(report.denials[0].message, /is not a valid RootGuard manifest/);
+});
+
+test("check denies unreadable or malformed package metadata", async () => {
+  for (const setup of [
+    (path) => writeFile(path, "{invalid"),
+    async (path) => {
+      await rm(path);
+      await mkdir(path);
+    }
+  ]) {
+    const repo = await fixtureRepo("allowed-command");
+    await setup(join(repo, "package.json"));
+
+    const report = await checkProject(repo);
+
+    assert.equal(report.ok, false);
+    assert.equal(report.denials[0].code, "package_metadata_unreadable");
+    assert.match(report.denials[0].message, /Unable to read package\.json metadata/);
+  }
 });
