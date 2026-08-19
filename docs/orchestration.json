@@ -19,6 +19,7 @@
     "git_root_mismatch",
     "git_remote_missing",
     "git_remote_mismatch",
+    "package_metadata_unreadable",
     "package_name_mismatch",
     "command_not_allowed"
   ],
