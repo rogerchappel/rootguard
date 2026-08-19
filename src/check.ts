@@ -26,11 +26,26 @@ export async function checkProject(cwd: string): Promise<CheckReport> {
   }
 
   const { manifest, manifestPath, projectRoot } = manifestContext;
-  const [gitRoot, actualGitRemote, actualPackageName] = await Promise.all([
+  const [gitRoot, actualGitRemote, packageMetadata] = await Promise.all([
     readGitRoot(resolvedCwd),
     readGitRemote(resolvedCwd),
-    readPackageName(projectRoot)
+    readPackageName(projectRoot).then(
+      (name) => ({ name }),
+      (error: unknown) => ({ error })
+    )
   ]);
+  const actualPackageName = "name" in packageMetadata ? packageMetadata.name : undefined;
+
+  if ("error" in packageMetadata) {
+    denials.push({
+      code: "package_metadata_unreadable",
+      message: "Unable to read package.json metadata.",
+      detail: {
+        path: resolve(projectRoot, "package.json"),
+        reason: packageMetadata.error instanceof Error ? packageMetadata.error.message : "Unknown read error"
+      }
+    });
+  }
 
   const [canonicalGitRoot, canonicalProjectRoot] = await Promise.all([
     gitRoot ? canonicalPath(gitRoot) : undefined,
@@ -60,7 +75,11 @@ export async function checkProject(cwd: string): Promise<CheckReport> {
     }
   }
 
-  if (manifest.identity.packageName && actualPackageName !== manifest.identity.packageName) {
+  if (
+    !("error" in packageMetadata) &&
+    manifest.identity.packageName &&
+    actualPackageName !== manifest.identity.packageName
+  ) {
     denials.push({
       code: "package_name_mismatch",
       message: "package.json name does not match the RootGuard manifest.",
