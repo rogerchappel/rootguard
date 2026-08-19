@@ -23,6 +23,7 @@ Agents should treat any non-zero exit code as a hard stop and surface the denial
 - git_remote_missing: the manifest expects an origin remote but none is set.
 - git_remote_mismatch: origin points somewhere else.
 - package_name_mismatch: package.json disagrees with the manifest.
+- package_metadata_unreadable: package.json exists but cannot be read or parsed; no requested command runs.
 - command_not_allowed: identity passed, but the command prefix is not allowed.
 
 ## Operational Notes

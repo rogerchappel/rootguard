@@ -75,7 +75,10 @@ Checks are deterministic and local:
     npx rootguard check --json
     npx rootguard run --json -- npm test
 
-Denials include stable codes such as git_remote_mismatch, package_name_mismatch, and command_not_allowed.
+Denials include stable codes such as git_remote_mismatch, package_name_mismatch,
+package_metadata_unreadable, and command_not_allowed. A malformed or unreadable
+package.json produces package_metadata_unreadable in both check and run reports;
+run never executes the requested command after that denial.
 
 ## Verify
 
