@@ -17,6 +17,19 @@ test("cli check emits machine-readable json", async () => {
   assert.equal(report.identity.expectedPackageName, "allowed-command-fixture");
 });
 
+test("cli check accepts an equivalent trailing-slash remote", async () => {
+  const repo = await fixtureRepo("allowed-command", {
+    remote: "git@github.com:example/allowed-command-fixture.git/"
+  });
+
+  const result = await runCli(["check", "--json", "--cwd", repo]);
+  const report = JSON.parse(result.stdout);
+
+  assert.equal(result.code, 0);
+  assert.equal(report.ok, true);
+  assert.deepEqual(report.denials, []);
+});
+
 test("cli init writes a checkout-independent schema reference", async () => {
   const repo = await fixtureRepo("allowed-command", {
     remote: "https://github.com/example/allowed-command-fixture.git"

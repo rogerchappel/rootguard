@@ -66,6 +66,8 @@ Checks are deterministic and local:
 - package.json name must match when configured.
 - git remote get-url origin must match when configured; equivalent HTTPS,
   `git@host:owner/repo`, and `ssh://git@host/owner/repo` spellings compare equally.
+  A trailing slash and the optional `.git` suffix are ignored, including the
+  combined `.git/` form; host, owner, and repository names must still match.
 - nested directories and symlinked path aliases are allowed only inside the same
   git root, as determined by filesystem identity.
 - commands must start with an explicit allow prefix.
