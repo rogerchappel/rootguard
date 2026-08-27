@@ -28,6 +28,18 @@ test("check treats HTTPS, SCP-style, and SSH URL remotes as the same identity", 
   }
 });
 
+test("check treats trailing slash and dot-git suffix variants as the same identity", async () => {
+  for (const remote of [
+    "https://github.com/example/allowed-command-fixture/",
+    "https://github.com/example/allowed-command-fixture.git/",
+    "git@github.com:example/allowed-command-fixture.git/",
+    "ssh://git@github.com/example/allowed-command-fixture.git/"
+  ]) {
+    const repo = await fixtureRepo("allowed-command", { remote });
+    assert.equal((await checkProject(repo)).ok, true, remote);
+  }
+});
+
 test("check preserves genuinely different remote identities", async () => {
   for (const remote of [
     "ssh://git@gitlab.com/example/allowed-command-fixture.git",
