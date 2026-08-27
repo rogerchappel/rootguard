@@ -16,7 +16,7 @@ export async function readGitRemote(cwd: string, remoteName = "origin"): Promise
 
 export function normalizeRemote(remote: string | undefined): string | undefined {
   if (!remote) return undefined;
-  const trimmed = remote.trim().replace(/\.git$/, "");
+  const trimmed = remote.trim().replace(/\/+$/, "").replace(/\.git$/, "");
   const scpLike = trimmed.match(/^git@([^:]+):(.+)$/);
   if (scpLike) {
     return `https://${scpLike[1]}/${scpLike[2]}`.toLowerCase();
