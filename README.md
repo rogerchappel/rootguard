@@ -27,6 +27,13 @@ Create a manifest:
 
     npx rootguard init --allow "npm test" --allow "npm run build"
 
+The compact `--allow` form keeps the existing shell-like whitespace splitting
+for simple commands. When a command token itself contains whitespace, use
+`--allow-argv` with a JSON array so every argv boundary is preserved exactly:
+
+    npx rootguard init --allow-argv '["node", "-e", "console.log(\"hello world\")"]'
+    npx rootguard run -- node -e 'console.log("hello world")'
+
 `rootguard init` refuses to replace an existing `.rootguard.json`. Review or
 remove the existing file explicitly before initializing the project again.
 
