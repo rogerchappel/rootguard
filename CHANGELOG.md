@@ -6,6 +6,7 @@
 - Add .rootguard.json manifest loading, validation, and initialization.
 - Add repo identity checks for package name, git root, and origin remote.
 - Add guarded command execution with explicit prefix allowlists.
+- Add argument-safe allowlist initialization for prefixes whose tokens contain whitespace.
 - Add text and JSON output for human and agent workflows.
 - Add fixtures and smoke tests for allowed commands, nested directories, wrong repos, and missing remotes.
 - Add safety examples and orchestration docs.

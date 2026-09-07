@@ -62,6 +62,9 @@ async function initCommand(argv: string[]): Promise<void> {
     } else if (part === "--allow") {
       allow.push(splitCommandPrefix(requireValue(parsed.rest, index, "--allow")));
       index += 1;
+    } else if (part === "--allow-argv") {
+      allow.push(parseCommandPrefix(requireValue(parsed.rest, index, "--allow-argv")));
+      index += 1;
     } else {
       throw new RootGuardError(`Unknown init option: ${part}`, 2);
     }
@@ -157,15 +160,30 @@ function splitCommandPrefix(value: string): string[] {
   return parts;
 }
 
+function parseCommandPrefix(value: string): string[] {
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(value);
+  } catch {
+    throw new RootGuardError("--allow-argv requires a JSON array of command tokens", 2);
+  }
+  if (!Array.isArray(parsed) || parsed.length === 0 || parsed.some((token) => typeof token !== "string" || token.length === 0)) {
+    throw new RootGuardError("--allow-argv requires a non-empty JSON array of non-empty strings", 2);
+  }
+  return parsed;
+}
+
 function writeHelp(): void {
   process.stdout.write(`RootGuard guards repo-local commands.
 
 Usage:
-  rootguard init [--package <name>] [--remote <url>] [--allow "npm test"]
+  rootguard init [--package <name>] [--remote <url>]
+                 [--allow "npm test"] [--allow-argv '["node","-e","code"]']
   rootguard check [--json] [--cwd <path>]
   rootguard run [--json] [--cwd <path>] -- <command>
 
 Commands are allowed only when the repo identity matches .rootguard.json and
 the command starts with an explicit allowlist prefix.
+Use --allow-argv when a token contains whitespace or must otherwise be preserved exactly.
 `);
 }

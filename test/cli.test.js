@@ -63,6 +63,52 @@ test("cli init refuses to replace an existing manifest", async () => {
   assert.deepEqual(await readFile(manifestPath), existing);
 });
 
+test("cli init preserves exact allowlist argv token boundaries", async () => {
+  const repo = await fixtureRepo("allowed-command");
+  await rm(join(repo, ".rootguard.json"));
+  const script = "console.log('hello world')";
+
+  const init = await runCli([
+    "init", "--cwd", repo, "--allow", "npm test",
+    "--allow-argv", JSON.stringify([process.execPath, "-e", script])
+  ]);
+  const manifest = JSON.parse(await readFile(join(repo, ".rootguard.json"), "utf8"));
+
+  assert.equal(init.code, 0);
+  assert.deepEqual(manifest.allow.map((rule) => rule.prefix), [
+    ["npm", "test"],
+    [process.execPath, "-e", script]
+  ]);
+
+  const allowed = await runCli(["run", "--cwd", repo, "--", process.execPath, "-e", script]);
+  assert.equal(allowed.code, 0);
+  assert.match(allowed.stdout, /hello world/);
+
+  const denied = await runCli(["run", "--cwd", repo, "--", process.execPath, "-e", "console.log('hello  world')"]);
+  assert.equal(denied.code, 1);
+  assert.match(denied.stderr, /command_not_allowed/);
+});
+
+test("cli init rejects malformed allowlist argv", async () => {
+  const repo = await fixtureRepo("allowed-command");
+  await rm(join(repo, ".rootguard.json"));
+
+  const malformed = await runCli(["init", "--cwd", repo, "--allow-argv", "not-json"]);
+  assert.equal(malformed.code, 2);
+  assert.match(malformed.stderr, /JSON array of command tokens/);
+
+  const invalid = await runCli(["init", "--cwd", repo, "--allow-argv", '["node",""]']);
+  assert.equal(invalid.code, 2);
+  assert.match(invalid.stderr, /non-empty JSON array of non-empty strings/);
+});
+
+test("cli help documents argument-safe allowlists", async () => {
+  const result = await runCli(["--help"]);
+  assert.equal(result.code, 0);
+  assert.match(result.stdout, /--allow-argv/);
+  assert.match(result.stdout, /token contains whitespace/);
+});
+
 test("cli run executes an allowed fixture command", async () => {
   const repo = await fixtureRepo("allowed-command", {
     remote: "https://github.com/example/allowed-command-fixture.git"
