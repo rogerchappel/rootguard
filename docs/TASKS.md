@@ -25,10 +25,15 @@
 
 ## Release Checklist
 
-- [ ] npm test
-- [ ] npm run check
-- [ ] npm run build
-- [ ] npm run smoke
-- [ ] bash scripts/validate.sh
-- [ ] npm run release:check
-- [ ] Confirm the publication artifact with npm run release:pack -- <directory>
+Validation recorded from a clean isolated checkout of `origin/main` at `6e415f3f093be6a7449b6ed3d8167f3430fd0e16` on 2026-10-02 (Node/npm versions were those provided by the runner):
+
+- [x] `npm ci` — passed (8 packages installed; npm reported 1 moderate audit finding).
+- [x] `npm test` — passed (32 tests).
+- [x] `npm run check` — passed.
+- [x] `npm run build` — passed.
+- [x] `npm run smoke` — passed.
+- [x] `bash scripts/validate.sh` — passed (optional `agent-qc` was unavailable and skipped).
+- [x] `npm run release:check` — passed (including all 32 tests and package smoke).
+- [x] `npm run release:pack -- /private/tmp/oss-worker-80edeb84/release-artifact` — passed; produced `rootguard-0.1.0.tgz`.
+
+These checks validate packaging only; no package was published.
